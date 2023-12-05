@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <title>Robot Control</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+  <div class="content-container">
+    <h1>Wall-E Control Panel</h1>
+
+    <button onclick="sendCommand('HIGH')" id="HIGHButton">High</button>
+    <button onclick="sendCommand('MED')" id="MEDButton">Medium</button>
+    <button onclick="sendCommand('SLOW')" id="SLOWButton">Low</button>
+    <button onclick="sendCommand('LOW')" id="LOWButton">Stop</button>
+
+    <div id="messageDisplay"></div>
+  </div>
+
+
+  <script>
+  document.body.addEventListener('keydown', function(event) {
+      switch (event.key) {
+        case '1':
+          sendCommand('HIGH');
+          break;
+        case '2':
+          sendCommand('MED');
+          break;
+        case '3':
+          sendCommand('SLOW');
+          break;
+        case '4':
+          sendCommand('LOW');
+          break;
+          
+        // Add more cases for other keys if needed
+      }
+    });
+
+  </script>
+  <script>
+    function sendCommand(command) {
+   
+
+      // Create a new XMLHttpRequest object
+      var xhr = new XMLHttpRequest();
+
+      // Define the GET request and the target URL
+      xhr.open("GET", `http://10.243.83.237:5000/digital/write/16/${command}`, true);
+
+      // Set up a callback function to handle the response
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+          if (xhr.status == 200) {
+            // You can handle the response here if needed
+            console.log("GET request successful");
+          } else {
+            console.error("GET request failed");
+          }
+        }
+      };
+
+      // Get the button element
+      const button = document.getElementById(`${command}Button`);
+
+      // Add the 'pressed' class to the button
+      button.classList.add('pressed');
+
+      // Remove the 'pressed' class after a short delay (adjust as needed)
+      setTimeout(() => {
+        button.classList.remove('pressed');
+      }, 1500);
+
+      // Display a message on the page
+      const messageDisplay = document.getElementById('messageDisplay');
+      messageDisplay.innerHTML = `Wall-E has ${command === 'HIGH' ? 'started going Fast Speed' : command === 'MED' ? 'started going Medium Speed' : command === 'LOW' ? 'STOPPED' : command === 'SLOW' ? 'started going Low Speed' : 'performed an action'}`;
+
+      // Remove the message after a certain time (adjust as needed)
+      setTimeout(() => {
+        messageDisplay.innerHTML = '';
+      }, 1500);
+
+      // Send the GET request
+      xhr.send();
+    }
+    
+
+  </script>
+
+</body>
+</html>
